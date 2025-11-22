@@ -1,0 +1,10 @@
+model\Autores.class
+db\Conexion.class
+Main.class
+model\Libros.class
+repository\AutoresRepository.class
+model\Prestamos.class
+model\Socios.class
+repository\SociosRepository.class
+repository\PrestamosRepository.class
+repository\LibrosRepository.class
