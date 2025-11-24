@@ -127,6 +127,9 @@ public class PrestamosRepository {
         }
     }
 
+    // Las funciones booleanas se usan para comprobar si se ha realizado correctamente
+    // o no la acción crítica que se espera. Para operaciones críticas con validaciones
+
     // REALIZAR PRÉSTAMO CON CONTROL DE DISPONIBILIDAD
     public boolean realizarPrestamo(String libroIsbn, Long socioId, String fechaDevolucionPrevista) {
         // Verificar disponibilidad del libro
