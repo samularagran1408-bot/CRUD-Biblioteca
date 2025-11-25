@@ -103,9 +103,11 @@ public class SociosRepository {
     }
 
     public boolean eliminarSocioSiNoTienePrestamos(Long id) {
+        // Se usan PreparedStatement y ResultSet porque aparte de que son consultas fijas por el conteo de las columnas de prestamo,
+        // se necesita consultar el ID del socio a eliminar
         // Verificación de si tiene préstamos activos
-        String sqlCheck = "SELECT COUNT(*) FROM PRESTAMOS WHERE SOCIO_ID = ?";
-        String sqlDelete = "DELETE FROM SOCIOS WHERE ID = ?";
+        String sqlCheck = "SELECT COUNT(*) FROM PRESTAMOS WHERE SOCIO_ID = ?"; // Cuenta las columnas donde el ID del ingresado en el main aparezca en la tabla de prestamos
+        String sqlDelete = "DELETE FROM SOCIOS WHERE ID = ?"; // Borra el socio respecto a su id ingresado en el main
         
         try (Connection connection = Conexion.getConnection()) {
             // Verificar si hay prestamos (Si tiene prestado o de vuelto significa que si tiene un historial)
