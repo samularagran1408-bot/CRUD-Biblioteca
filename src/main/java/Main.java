@@ -1,502 +1,315 @@
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
-import model.Autores;
-import model.Libros;
-import model.Prestamos;
-import model.Socios;
-import repository.AutoresRepository;
-import repository.LibrosRepository;
-import repository.SociosRepository;
-import repository.PrestamosRepository;
+import model.Categoría;
+import model.Cursos;
+import model.Estudiantes;
+import model.Estudiantes_Cursos;
+import repository.CursosRepository;
+import repository.EstudiantesRepository;
+import repository.Estudiantes_CursosRepository;
+import repository.CategoríaRepository;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
-        AutoresRepository autoresRepository = new AutoresRepository();
-        LibrosRepository librosRepository = new LibrosRepository();
-        SociosRepository sociosRepository = new SociosRepository();
-        PrestamosRepository prestamosRepository = new PrestamosRepository();
-        
-        int opcion;
+        CategoríaRepository categoríaRepository = new CategoríaRepository();
+        EstudiantesRepository estudiantesRepository = new EstudiantesRepository();
+        Estudiantes_CursosRepository estudiantes_CursosRepository = new Estudiantes_CursosRepository();
+        CursosRepository cursosRepository = new CursosRepository();
+        Estudiantes_CursosRepository ecRepository = new Estudiantes_CursosRepository();
 
+        int opcion;
         do {
-            System.out.println("\n SISTEMA DE BIBLIOTECA ");
-            System.out.println("1. Gestionar Autores");
-            System.out.println("2. Gestionar Libros");
-            System.out.println("3. Gestionar Socios");
-            System.out.println("4. Gestionar Prestamos");
+            System.out.println("\n SISTEMA DE CURSOS ");
+            System.out.println("1. Gestionar Categorías");
+            System.out.println("2. Gestionar Cursos");
+            System.out.println("3. Gestionar Estudiantes");
+            System.out.println("4. Gestionar Inscripciones");
             System.out.println("0. Salir");
             System.out.print("Seleccione una opción: ");
             
             opcion = sc.nextInt();
             sc.nextLine(); 
-
             switch (opcion) {
                 case 1:
-                    gestionarAutores(sc, autoresRepository);
+                    gestionarCategorías(sc, categoríaRepository);
                     break;
-                    
                 case 2:
-                    gestionarLibros(sc, librosRepository);
+                    gestionarCursos(sc, cursosRepository);
                     break;
-                    
                 case 3:
-                    gestionarSocios(sc, sociosRepository);
+                    gestionarEstudiantes(sc, estudiantesRepository, estudiantes_CursosRepository);
                     break;
-
                 case 4:
-                    gestionarPrestamos(sc, prestamosRepository);
+                    gestionarInscripciones(sc, ecRepository, estudiantesRepository, cursosRepository);
                     break;
-                    
                 case 0:
-                    System.out.println("¡Hasta pronto!");
+                    System.out.println("Saliendo del sistema");
                     break;
-                    
                 default:
                     System.out.println("Opción no válida");
+                    break;
             }
         } while (opcion != 0);
-
         sc.close();
     }
 
-    // Método para gestionar Autores
-    private static void gestionarAutores(Scanner sc, AutoresRepository autoresRepository) {
-        int opcionAutor;
-
+    public static void gestionarCategorías(Scanner sc, CategoríaRepository categoríaRepository) throws SQLException {
+        int opcionCategoría;
         do {
-            System.out.println("\n GESTIÓN DE AUTORES ");
-            System.out.println("1. Insertar Autor");
-            System.out.println("2. Listar Autores");
-            System.out.println("3. Consultar Autor por ID");
-            System.out.println("4. Editar Autor");
-            System.out.println("5. Eliminar Autor");
-            System.out.println("0. Volver al Menú Principal");
+            System.out.println("\n GESTIÓN DE CATEGORÍAS");
+            System.out.println("1. Insertar Categorías");
+            System.out.println("2. Listar Categoría");
+            System.out.println("3. Consultar Categoría por ID");
+            System.out.println("4. Eliminar Categoría por ID");
+            System.out.println("5. Editar Categoría por ID");
+            System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione una opción: ");
-            
-            opcionAutor = sc.nextInt();
-            sc.nextLine(); 
 
-            switch (opcionAutor) {
+            opcionCategoría = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcionCategoría) {
                 case 1:
-                    System.out.print("Ingrese el nombre del autor: ");
+                    System.out.println("Insertando Categoría");
+                    System.out.println("Introduzca el Nombre de la Categoría: ");
                     String nombre = sc.nextLine();
-                    System.out.print("Ingrese la nacionalidad del autor: ");
-                    String nacionalidad = sc.nextLine();
-                    
-                    Autores autor = new Autores(nombre, nacionalidad);
-                    autoresRepository.insertarAutor(autor);
+                    System.out.println("Introduzca el Email de la Categoría: ");
+                    String email = sc.nextLine();
+                    System.out.println("Introduzca el Estado de la Categoría: ");
+                    String Estado = sc.nextLine();
+                    Categoría categoría = new Categoría(nombre, email, Estado);
+                    categoríaRepository.InsertarCategoría(categoría);
                     break;
-                    
                 case 2:
-                    System.out.println("\n LISTA DE AUTORES ");
-                    for (Autores autores : autoresRepository.listarAutores()) {
-                        System.out.println("ID: " + autores.getId());
-                        System.out.println("Autor: " + autores.getNombre());
-                        System.out.println("Nacionalidad: " + autores.getNacionalidad());
-                        System.out.println("------------------------");
+                    System.out.println("Listando Categorías");
+                    List<Categoría> lista = categoríaRepository.ListarCategorías();
+                    for (int i = 0; i < lista.size(); i++) {
+                        System.out.println("ID: " + lista.get(i).getID());
+                        System.out.println("Nombre: " + lista.get(i).getNombre());
+                        System.out.println("Email: " + lista.get(i).getEmail());
+                        System.out.println("Estado: " + lista.get(i).getEstado());
                     }
                     break;
-                    
                 case 3:
-                    System.out.print("Ingrese el ID del autor que desea consultar: ");
-                    Long idConsulta = sc.nextLong();
-                    sc.nextLine(); 
-                    autoresRepository.consultarAutorPorId(idConsulta);
+                    System.out.println("Consultando Categoría por ID");
+                    Long IDConsultar = sc.nextLong();
+                    categoríaRepository.ConsultarCategoríaPorID(IDConsultar);
                     break;
-                    
                 case 4:
-                    System.out.print("Ingrese el ID del autor que desea editar: ");
-                    Long idEditar = sc.nextLong();
-                    sc.nextLine(); 
-                    System.out.print("Ingrese el nuevo nombre del autor: ");
-                    String nuevoNombre = sc.nextLine();
-                    System.out.print("Ingrese la nueva nacionalidad del autor: ");
-                    String nuevaNacionalidad = sc.nextLine();
-                    autoresRepository.editarAutorPorId(idEditar, nuevoNombre, nuevaNacionalidad);
+                    System.out.println("Eliminando Categoría por ID");
+                    Long IDEliminar = sc.nextLong();
+                    categoríaRepository.EliminarCategoríaPorID(IDEliminar);
                     break;
-                    
                 case 5:
-                    System.out.print("Ingrese el ID del autor que desea eliminar: ");
-                    Long idEliminar = sc.nextLong();
-                    sc.nextLine(); 
-                    autoresRepository.eliminarAutorPorId(idEliminar);
+                    System.out.println("Editando Categoría por ID");
+                    System.out.println("Ingrese el IDConsultar de la Categoría que desea editar: ");
+                    Long IDEditar = sc.nextLong();
+                    sc.nextLine();
+                    System.out.println("Introduzca el nuevo Nombre de la Categoría: ");
+                    String nombre2 = sc.nextLine();
+                    System.out.println("Introduzca el nuevo Email de la Categoría: ");
+                    String email2 = sc.nextLine();
+                    System.out.println("Introduzca el nuevo Estado de la Categoría: ");
+                    String Estado2 = sc.nextLine();
+                    categoríaRepository.EditarCategoríaPorID(IDEditar, nombre2, email2, Estado2);
                     break;
-
                 case 0:
-                    System.out.println("Volviendo al menú principal...");
+                    System.out.println("Volviendo al menú principal");
                     break;
-                    
                 default:
                     System.out.println("Opción no válida");
+                    break;
             }
-        } while (opcionAutor != 0);
+        } while (opcionCategoría != 0);
     }
 
-    // Método para gestionar Libros
-    private static void gestionarLibros(Scanner sc, LibrosRepository librosRepository) throws SQLException {
-        int opcionLibro;
-
+    public static void gestionarCursos(Scanner sc, CursosRepository cursosRepository) throws SQLException {
+        int opcionCursos;
         do {
-            System.out.println("\n GESTIÓN DE LIBROS ");
-            System.out.println("1. Insertar Libro");
-            System.out.println("2. Listar Libros");
-            System.out.println("3. Consultar Libro por ISBN");
-            System.out.println("4. Editar Libro");
-            System.out.println("5. Eliminar Libro");
-            System.out.println("0. Volver al Menú Principal");
+            System.out.println("\n GESTIÓN DE CURSOS");
+            System.out.println("1. Insertar Cursos");    
+            System.out.println("2. Listar Cursos");
+            System.out.println("3. Consultar Curso por ID");
+            System.out.println("4. Eliminar Curso por ID");
+            System.out.println("5. Editar Curso por ID");
+            System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione una opción: ");
-            
-            opcionLibro = sc.nextInt();
-            sc.nextLine(); 
 
-            switch (opcionLibro) {
+            opcionCursos = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcionCursos) {
                 case 1:
-                    System.out.print("Ingrese el ISBN del libro: ");
-                    Long isbn = sc.nextLong();
-                    sc.nextLine(); 
-                    System.out.print("Ingrese el título del libro: ");
-                    String titulo = sc.nextLine();
-                    System.out.print("Ingrese el autor ID del libro: ");
-                    Long autor_id = sc.nextLong();
-                    System.out.print("Ingrese el año de publicación del libro: ");
-                    Long año_publicacion = sc.nextLong();
-                    System.out.print("Ingrese la cantidad total del libro: ");
-                    Long cantidad_total = sc.nextLong();
-                    System.out.print("Ingrese la cantidad disponible del libro: ");
-                    Long cantidad_disponible = sc.nextLong();
-                    sc.nextLine(); 
-                    
-                    Libros libro = new Libros(isbn, titulo, autor_id, año_publicacion, cantidad_total, cantidad_disponible);
-                    librosRepository.insertarLibro(libro);
+                    System.out.println("Insertando Curso");
+                    System.out.println("Introduzca el nombre del surso: ");
+                    String nombre = sc.nextLine();
+                    System.out.println("Introduzca el ID de la Categoría del Curso: ");
+                    Long Categoria = sc.nextLong();
+                    Cursos curso = new Cursos(nombre, Categoria);
+                    cursosRepository.InsertarCurso(curso, null);
                     break;
-                    
                 case 2:
-                    System.out.println("\n LISTA DE LIBROS ");
-                    for (Libros libros : librosRepository.listarLibros()) {
-                        System.out.println("ISBN: " + libros.getIsbn());
-                        System.out.println("Título: " + libros.getTitulo());
-                        System.out.println("Autor ID: " + libros.getAutor_id());
-                        System.out.println("Año: " + libros.getAño_publicacion());
-                        System.out.println("Total: " + libros.getCantidad_total());
-                        System.out.println("Disponible: " + libros.getCantidad_disponible());
-                        System.out.println("------------------------");
+                    System.out.println("Listando Cursos");
+                    List<Cursos> lista = cursosRepository.ListarCursos();
+                    for (int i = 0; i < lista.size(); i++) {
+                        System.out.println("ID: " + lista.get(i).getID());
+                        System.out.println("Nombre: " + lista.get(i).getNom_cur());
+                        System.out.println("Categoría: " + lista.get(i).getCategoria());
                     }
                     break;
-                    
                 case 3:
-                    System.out.print("Ingrese el ISBN del libro que desea consultar: ");
-                    Long isbnConsulta = sc.nextLong();
-                    sc.nextLine(); 
-                    librosRepository.consultarLibroPorIsbn(isbnConsulta);;
+                    System.out.println("Ingresa el ID del Curso que desea consultar: ");
+                    Long IDConsultar = sc.nextLong();
+                    sc.nextLine();
+                    cursosRepository.ConsultarCursoPorID(IDConsultar);
                     break;
-                    
                 case 4:
-                    System.out.print("Ingrese el ISBN del libro que desea editar: ");
-                    Long isbnEditar = sc.nextLong();
-                    sc.nextLine(); 
-                    System.out.print("Ingrese el nuevo título del libro: ");
-                    String nuevoTitulo = sc.nextLine();
-                    System.out.print("Ingrese el nuevo autor ID del libro: ");
-                    Long nuevoAutor_id = sc.nextLong();
-                    System.out.print("Ingrese el nuevo año de publicación del libro: ");
-                    Long nuevoAño_publicacion = sc.nextLong();
-                    System.out.print("Ingrese la nueva cantidad total del libro: ");
-                    Long nuevoCantidad_total = sc.nextLong();
-                    System.out.print("Ingrese la nueva cantidad disponible del libro: ");
-                    Long nuevoCantidad_disponible = sc.nextLong();
-                    sc.nextLine(); 
-                    
-                    librosRepository.editarLibroPorIsbn(isbnEditar, nuevoTitulo, nuevoAutor_id, nuevoAño_publicacion, nuevoCantidad_total, nuevoCantidad_disponible);
+                    System.out.println("Ingrese el ID del Curso que desea eliminar: ");
+                    Long IDEliminar = sc.nextLong();
+                    sc.nextLine();
+                    cursosRepository.EliminarCursoPorID(IDEliminar);
                     break;
-                    
                 case 5:
-                    System.out.print("Ingrese el ISBN del libro que desea eliminar: ");
-                    Long isbnEliminar = sc.nextLong();
-                    sc.nextLine(); 
-                    librosRepository.eliminarLibroSiNoTienePrestamos(isbnEliminar);
+                    System.out.println("Ingrese el ID del Curso que desea editar: ");
+                    Long IDEditar = sc.nextLong();
+                    System.out.println("Introduzca el nuevo Título del Curso: ");
+                    String Nombre2 = sc.nextLine();
+                    System.out.println("Introduzca el nuevo ID de la Categoría del Curso: ");
+                    Long Categoria2 = sc.nextLong();
+                    cursosRepository.EditarCursoPorID(IDEditar, Nombre2, Categoria2);;
                     break;
-                    
                 case 0:
-                    System.out.println("Volviendo al menú principal...");
+                    System.out.println("Volviendo al menú principal");
                     break;
-                    
                 default:
                     System.out.println("Opción no válida");
+                    break;
             }
-        } while (opcionLibro != 0);
+        } while (opcionCursos != 0);
     }
 
-    // Método para gestionar Socios
-    private static void gestionarSocios(Scanner sc, SociosRepository sociosRepository) {
-        int opcionSocio;
-
+    public static void gestionarEstudiantes(Scanner sc, EstudiantesRepository estudiantesRepository, Estudiantes_CursosRepository estudiantes_CursosRepository) throws Exception {
+        int opcionEstudiantes;
         do {
-            System.out.println("\n GESTIÓN DE SOCIOS ");
-            System.out.println("1. Insertar Socio");
-            System.out.println("2. Listar Socios");
-            System.out.println("3. Consultar Socio por ID");
-            System.out.println("4. Editar Socio");
-            System.out.println("5. Eliminar Socio");
-            System.out.println("0. Volver al Menú Principal");
+            System.out.println("\n GESTIÓN DE ESTUDIANTES");
+            System.out.println("1. Insertar Estudiantes");
+            System.out.println("2. Listar Estudiantes");
+            System.out.println("3. Consultar Estudiante por ID");
+            System.out.println("4. Eliminar Estudiante por ID");
+            System.out.println("5. Editar Estudiante por ID");
+            System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione una opción: ");
-            
-            opcionSocio = sc.nextInt();
-            sc.nextLine(); 
 
-            switch (opcionSocio) {
+            opcionEstudiantes = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcionEstudiantes) {
                 case 1:
-                    System.out.print("Ingrese el nombre del socio: ");
-                    String nombreSocio = sc.nextLine();
-                    System.out.print("Ingrese el apellido del socio: ");
-                    String apellido = sc.nextLine();
-                    System.out.print("Ingrese el DNI del socio: ");
-                    String dni = sc.nextLine();
-                    System.out.print("Ingrese el teléfono del socio: ");
-                    String telefono = sc.nextLine();
-                    
-                    Socios socio = new Socios(nombreSocio, apellido, dni, telefono);
-                    sociosRepository.insertarSocio(socio);
+                    System.out.println("Insertando Estudiante");
+                    System.out.println("Introduzca el nombre del Estudiante: ");
+                    String Curso = sc.nextLine();
+                    System.out.println("Introduzca el Email del Estudiante: ");
+                    String email = sc.nextLine();
+                    Estudiantes estudiante = new Estudiantes(Curso, email);
+                    estudiantesRepository.InsertarEstudiante(estudiante);
                     break;
-                    
                 case 2:
-                    System.out.println("\n LISTA DE SOCIOS ");
-                    for (Socios socios : sociosRepository.listarSocios()) {
-                        System.out.println("ID: " + socios.getId());
-                        System.out.println("Nombre: " + socios.getNombre());
-                        System.out.println("Apellido: " + socios.getApellido());
-                        System.out.println("DNI: " + socios.getDni());
-                        System.out.println("Teléfono: " + socios.getTelefono());
-                        System.out.println("------------------------");
+                    System.out.println("Listando Estudiantes");
+                    List<Estudiantes> lista = estudiantesRepository.ListarEstudiantes();
+                    for (int i = 0; i < lista.size(); i++) {
+                        System.out.println("ID: " + lista.get(i).getID());
+                        System.out.println("Curso: " + lista.get(i).getNom_cur());
+                        System.out.println("Email: " + lista.get(i).getEmail());
                     }
                     break;
-                    
                 case 3:
-                    System.out.print("Ingrese el ID del socio que desea consultar: ");
-                    Long idConsulta = sc.nextLong();
-                    sc.nextLine(); 
-                    sociosRepository.consultarSocioPorId(idConsulta);
+                    System.out.println("Ingresa el ID del Estudiante que desea consultar: ");
+                    Long IDConsultar = sc.nextLong();
+                    sc.nextLine();
+                    estudiantesRepository.ConsultarEstudiantePorID(IDConsultar);;
                     break;
-                    
                 case 4:
-                    System.out.print("Ingrese el ID del socio que desea editar: ");
-                    Long idEditar = sc.nextLong();
-                    sc.nextLine(); 
-                    System.out.print("Ingrese el nuevo nombre del socio: ");
-                    String nuevoNombreSocio = sc.nextLine();
-                    System.out.print("Ingrese el nuevo apellido del socio: ");
-                    String nuevoApellido = sc.nextLine();
-                    System.out.print("Ingrese el nuevo DNI del socio: ");
-                    String nuevoDni = sc.nextLine();
-                    System.out.print("Ingrese el nuevo teléfono del socio: ");
-                    String nuevoTelefono = sc.nextLine();
-                    
-                    sociosRepository.editarSocioPorId(idEditar, nuevoNombreSocio, nuevoApellido, nuevoDni, nuevoTelefono);
+                    System.out.println("Ingrese el ID del Estudiante que desea eliminar: ");
+                    Long IDEliminar = sc.nextLong();
+                    sc.nextLine();
+                    estudiantesRepository.EliminarEstudiantePorID(IDEliminar);
                     break;
-                    
                 case 5:
-                    System.out.print("Ingrese el ID del socio que desea eliminar: ");
-                    Long idEliminar = sc.nextLong();
-                    sc.nextLine(); 
-                    sociosRepository.eliminarSocioSiNoTienePrestamos(idEliminar);
+                    System.out.println("Ingrese el ID del Estudiante que desea editar: ");
+                    Long IDEditar = sc.nextLong();
+                    System.out.println("Introduzca el nuevo Curso del Estudiante: ");
+                    String Curso2 = sc.nextLine();
+                    System.out.println("Introduzca el nuevo Email del Estudiante: ");
+                    String email2 = sc.nextLine();
+                    estudiantesRepository.EditarEstudiantePorID(IDEditar, Curso2, email2);
                     break;
-                    
                 case 0:
-                    System.out.println("Volviendo al menú principal...");
+                    System.out.println("Volviendo al menú principal");
                     break;
-                    
                 default:
                     System.out.println("Opción no válida");
+                    break;
             }
-        } while (opcionSocio != 0);
+        } while (opcionEstudiantes != 0);
     }
 
-    // Método para gestionar Prestamos
-private static void gestionarPrestamos(Scanner sc, PrestamosRepository prestamosRepository) {
-    int opcionPrestamo;
+    public static void gestionarInscripciones(Scanner sc, Estudiantes_CursosRepository ecRepository, EstudiantesRepository estudiantesRepository, CursosRepository cursosRepository) {
+        int opcionInscripciones;
+        do {
+            System.out.println("\n GESTIÓN DE INSCRIPCIONES");
+            System.out.println("1. Inscribir Estudiante a Curso");
+            System.out.println("2. Listar Cursos de un Estudiante");
+            System.out.println("3. Dar de baja Curso de un Estudiante");
+            System.out.println("4. Listar Todas las Inscripciones");
+            System.out.println("0. Volver al menú principal");
+            System.out.print("Seleccione una opción: ");
 
-    do {
-        System.out.println("\n GESTIÓN DE PRESTAMOS ");
-        System.out.println("1. Insertar Prestamo");
-        System.out.println("2. Listar Prestamos");
-        System.out.println("3. Consultar Prestamo por ID");
-        System.out.println("4. Editar Prestamo");
-        System.out.println("5. Eliminar Prestamo");
-        System.out.println("6. Realizar préstamo de un libro");
-        System.out.println("7. Devolver un libro");
-        System.out.println("8. Listar préstamos activos");
-        System.out.println("9. Listar préstamos de un socio específico");
-        System.out.println("10. Ver libros prestados actualmente y quién los tiene");
-        System.out.println("0. Volver al Menú Principal");
-        System.out.print("Seleccione una opción: ");
-        
-        opcionPrestamo = sc.nextInt();
-        sc.nextLine(); 
+            opcionInscripciones = sc.nextInt();
+            sc.nextLine();
 
-        switch (opcionPrestamo) {
-            case 1:
-                System.out.print("Ingrese el ISBN del libro: ");
-                String isbn = sc.nextLine();
-                System.out.print("Ingrese el ID del socio: ");
-                Long socioId = sc.nextLong();
-                sc.nextLine(); // Salto de línea
-                System.out.print("Ingrese la fecha de prestamo (YYYY-MM-DD): ");
-                String fechaPrestamo = sc.nextLine();
-                System.out.print("Ingrese la fecha de devolución prevista (YYYY-MM-DD): ");
-                String fechaDevolucionPrevista = sc.nextLine();
-                System.out.print("Ingrese la fecha de devolución real (YYYY-MM-DD o dejar vacío): ");
-                String fechaDevolucionReal = sc.nextLine();
-                System.out.print("Ingrese el estado del prestamo (PRESTADO/DEVUELTO): ");
-                String estado = sc.nextLine();
-                
-                Prestamos prestamo = new Prestamos(isbn, socioId, fechaPrestamo, fechaDevolucionPrevista, fechaDevolucionReal, estado);
-                prestamosRepository.insertarPrestamo(prestamo);
-                break;
-
-            case 2:
-                System.out.println("\n LISTA DE PRÉSTAMOS ");
-                for (Prestamos p : prestamosRepository.listarPrestamos()) {
-                    System.out.println("ID: " + p.getId());
-                    System.out.println("Libro ISBN: " + p.getLibroIsbn());
-                    System.out.println("Socio ID: " + p.getSocioId());
-                    System.out.println("Fecha préstamo: " + p.getFechaPrestamo());
-                    System.out.println("Fecha devolución prevista: " + p.getFechaDevolucionPrevista());
-                    System.out.println("Fecha devolución real: " + 
-                        (p.getFechaDevolucionReal() != null ? p.getFechaDevolucionReal() : "Pendiente"));
-                    System.out.println("Estado: " + p.getEstado());
-                    System.out.println("------------------------");
-                }
-                break;
-
-            case 3:
-                System.out.print("Ingrese el ID del préstamo a consultar: ");
-                Long idConsulta = sc.nextLong();
-                sc.nextLine(); // Salto de línea
-                prestamosRepository.consultarPrestamoPorId(idConsulta);
-                break;
-
-            case 4:
-                System.out.print("Ingrese el ID del préstamo a editar: ");
-                Long idEditar = sc.nextLong();
-                sc.nextLine(); // Salto de línea
-                System.out.print("Ingrese la nueva fecha de préstamo (YYYY-MM-DD): ");
-                String nuevoFechaPrestamo = sc.nextLine();
-                System.out.print("Ingrese la nueva fecha de devolución prevista (YYYY-MM-DD): ");
-                String nuevoFechaDevolucionPrevista = sc.nextLine();
-                System.out.print("Ingrese la nueva fecha de devolución real (YYYY-MM-DD): ");
-                String nuevoFechaDevolucionReal = sc.nextLine();
-                System.out.print("Ingrese el nuevo estado (PRESTADO/DEVUELTO): ");
-                String nuevoEstado = sc.nextLine();
-                
-                prestamosRepository.editarPrestamoPorId(idEditar, nuevoFechaPrestamo, nuevoFechaDevolucionPrevista, nuevoFechaDevolucionReal, nuevoEstado);
-                break;
-
-            case 5:
-                System.out.print("Ingrese el ID del préstamo a eliminar: ");
-                Long idEliminar = sc.nextLong();
-                sc.nextLine(); // Salto de línea
-                prestamosRepository.eliminarPrestamoPorId(idEliminar);
-                break;
-
-            // Algunas se trabajan con booleanos para comprobar si se ha realizado correctamente
-            // o no la acción crítica que se espera
-            case 6:
-                System.out.println("\n REALIZAR PRÉSTAMO CONTROLADO ");
-                System.out.print("Ingrese el ISBN del libro: ");
-                String isbnControlado = sc.nextLine();
-                System.out.print("Ingrese el ID del socio: ");
-                Long socioIdControlado = sc.nextLong();
-                sc.nextLine(); // Salto de línea
-                System.out.print("Ingrese la fecha de devolución prevista (YYYY-MM-DD): ");
-                String fechaDevolucionControlada = sc.nextLine();
-                
-                boolean prestamoExitoso = prestamosRepository.realizarPrestamo(isbnControlado, socioIdControlado, fechaDevolucionControlada);
-                
-                if (prestamoExitoso) {
-                    System.out.println("Préstamo realizado exitosamente");
-                } else {
-                    System.out.println("No se pudo realizar el préstamo");
-                }
-                break;
-
-            case 7:
-                System.out.println("\n DEVOLVER LIBRO ");
-                System.out.print("Ingrese el ID del préstamo a devolver: ");
-                Long prestamoIdDevolver = sc.nextLong();
-                sc.nextLine(); // Salto de línea
-                
-                System.out.print("¿Confirmar devolución? (s/n): ");
-                String confirmarDevolucion = sc.nextLine();
-                
-                if (confirmarDevolucion.equalsIgnoreCase("s")) {
-                    boolean devolucionExitosa = prestamosRepository.devolverLibro(prestamoIdDevolver);
-                    
-                    if (devolucionExitosa) {
-                        System.out.println("Devolución registrada exitosamente");
-                    } else {
-                        System.out.println("No se pudo registrar la devolución");
+            switch (opcionInscripciones) {
+                case 1:
+                    System.out.println("Inscribiendo Estudiante a Curso");
+                    System.out.print("Ingrese el ID del Estudiante: ");
+                    Long estudianteId = sc.nextLong();
+                    System.out.print("Ingrese el ID del Curso: ");
+                    Long cursoId = sc.nextLong();
+                    ecRepository.inscribirEstudianteACurso(estudianteId, cursoId);
+                    break;
+                case 2:
+                    System.out.println("Listando Cursos de un Estudiante");
+                    System.out.print("Ingrese el ID del Estudiante: ");
+                    Long estId = sc.nextLong();
+                    List<String> cursos = ecRepository.listarCursosDelEstudiante(estId);
+                    for (String cursoInfo : cursos) {
+                        System.out.println(cursoInfo);
                     }
-                } else {
-                    System.out.println("Devolución cancelada.");
-                }
-                break;
-
-            case 8:
-                System.out.println("\n PRÉSTAMOS ACTIVOS ");
-                List<Prestamos> prestamosActivos = prestamosRepository.listarPrestamosActivos();
-                
-                if (prestamosActivos.isEmpty()) {
-                    System.out.println("No hay préstamos activos.");
-                } else {
-                    for (Prestamos prestamoActivo : prestamosActivos) {
-                        System.out.println("ID: " + prestamoActivo.getId());
-                        System.out.println("Libro ISBN: " + prestamoActivo.getLibroIsbn());
-                        System.out.println("Socio ID: " + prestamoActivo.getSocioId());
-                        System.out.println("Fecha préstamo: " + prestamoActivo.getFechaPrestamo());
-                        System.out.println("Fecha devolución prevista: " + prestamoActivo.getFechaDevolucionPrevista());
-                        System.out.println("Estado: " + prestamoActivo.getEstado());
-                        System.out.println("------------------------");
+                    break;
+                case 3:
+                    System.out.println("Dar de baja Curso de un Estudiante");
+                    System.out.print("Ingrese el ID del Estudiante: ");
+                    Long estId2 = sc.nextLong();
+                    System.out.print("Ingrese el ID del Curso: ");
+                    Long curId2 = sc.nextLong();
+                    ecRepository.darDeBajaEstudiante(estId2, curId2);
+                    break;
+                case 4:
+                    System.out.println("Listando Estudiantes del Curso");
+                    List<Estudiantes_Cursos> estudiantes2 = ecRepository.listarTodasInscripciones();
+                    for (Estudiantes_Cursos estudianteInfo : estudiantes2) {
+                        System.out.println(estudianteInfo.getEstudiante() + " | " + estudianteInfo.getCurso());
                     }
-                }
-                break;
-
-            case 9:
-                System.out.println("\n PRÉSTAMOS POR SOCIO ");
-                System.out.print("Ingrese el ID del socio: ");
-                Long idSocio = sc.nextLong();
-                sc.nextLine(); // Salto de línea
-                
-                List<Prestamos> prestamosSocio = prestamosRepository.listarPrestamosPorSocio(idSocio);
-                
-                if (prestamosSocio.isEmpty()) {
-                    System.out.println("El socio no tiene préstamos registrados.");
-                } else {
-                    System.out.println("Préstamos del socio ID: " + idSocio);
-                    for (Prestamos prestamoSocio : prestamosSocio) {
-                        System.out.println("ID Préstamo: " + prestamoSocio.getId());
-                        System.out.println("Libro ISBN: " + prestamoSocio.getLibroIsbn());
-                        System.out.println("Fecha préstamo: " + prestamoSocio.getFechaPrestamo());
-                        System.out.println("Fecha devolución prevista: " + prestamoSocio.getFechaDevolucionPrevista());
-                        System.out.println("Fecha devolución real: " + 
-                            (prestamoSocio.getFechaDevolucionReal() != null ? prestamoSocio.getFechaDevolucionReal() : "Pendiente"));
-                        System.out.println("Estado: " + prestamoSocio.getEstado());
-                        System.out.println("------------------------");
-                    }
-                }
-                break;
-
-            case 10:
-                prestamosRepository.listarLibrosPrestadosConSocios();
-                break;
-
-            case 0:
-                System.out.println("Volviendo al menú principal...");
-                break;
-
-            default:
-                System.out.println("Opción no válida");
-        }
-    } while (opcionPrestamo != 0);
-}
+                    System.out.println("Estudiantes inscritos en cursos:");
+                    break;
+                case 0:
+                    System.out.println("Volviendo al menú principal");
+                    break;
+                default:
+                    System.out.println("Opción no válida");
+                    break;
+            }
+        } while (opcionInscripciones != 0);
+    }
 }
