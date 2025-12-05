@@ -78,6 +78,7 @@ public class Estudiantes_CursosRepository {
             ResultSet rs = pstmt.executeQuery();
             
             int contador = 1; // cuenta el número de cursos inscritos para despues mostrarlos
+            //
             boolean tieneCursos = false;
             
             while (rs.next()) {
